@@ -5,7 +5,7 @@ import {AuthService} from './auth.service';
 import {HttpStrategy} from './strategies/http.strategy';
 import {GithubStrategy} from './strategies/github.strategy';
 import {APP_INTERCEPTOR} from '@nestjs/core';
-import {LoggingInterceptor} from './interceptors/logging.interceptor';
+import {LoggingInterceptor} from '../interceptors/logging.interceptor';
 
 @Module({
     controllers: [AuthController],
