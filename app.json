@@ -1,0 +1,14 @@
+{
+  "addons": [
+
+  ],
+  "buildpacks": [
+
+  ],
+  "env": {
+  },
+  "formation": {
+  },
+  "name": "github-auth-nestjs-test",
+  "stack": "heroku-18"
+}
