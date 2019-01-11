@@ -1,4 +1,4 @@
-import {Controller, Get, Req, UseGuards} from '@nestjs/common';
+import {Controller, Get, Req, Res, UseGuards} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {AuthService} from './auth.service';
 
@@ -7,9 +7,28 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {
     }
 
+    @Get()
+    login(@Req() request, @Res() response) {
+        return response.redirect('/auth/github');
+    }
+
+    @Get('github')
+    @UseGuards(AuthGuard('github'))
+    signInWithGithub(){
+        return 'Logging...';
+    }
+
+    @Get('github/callback')
+    @UseGuards(AuthGuard('github'))
+    async signInWithGithubCallback(@Req() request){
+        const user = request.user;
+        user.githubProfile.repositories = await this.authService.getRepositopriesForLoggedUser(user.token);
+        return user;
+    }
+
     @Get('basic')
     @UseGuards(AuthGuard('bearer'))
-    findAllBasic(@Req() request) {
+    signInWithHttpBearer(@Req() request) {
         return JSON.stringify({
             type: 'basic',
             authorization: request.headers.authorization,

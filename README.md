@@ -26,8 +26,8 @@ Launch application
 
 Test application
     
-[Sign in with github](http://localhost:3000)
+[Sign in with github](http://localhost:3000/auth)
 
 Live demo
 
-[Demo](https://github-auth-nestjs-test-dev.herokuapp.com)
+[Demo](https://github-auth-nestjs-test-dev.herokuapp.com/auth)
