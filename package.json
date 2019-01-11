@@ -22,11 +22,11 @@
     "passport-http-bearer": "^1.0.1",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.0.0",
-    "typescript": "^2.8.1"
+    "typescript": "^2.8.1",
+    "ts-node": "^6.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.9",
-    "ts-node": "^6.0.0",
     "tslint": "^5.9.1"
   },
   "repository": {
