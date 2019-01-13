@@ -1,38 +1,28 @@
 import {Injectable} from '@nestjs/common';
-import * as graphql from '@octokit/graphql';
-import {_} from 'lodash';
+import {OwnRepositoriesService} from '../repositories/prodivers/github/repostories/own/own.repositories.service';
+import {ContributedRepositoriesService} from '../repositories/prodivers/github/repostories/contributed/contributed.repositories.service';
+import {PullRequestsService} from '../repositories/prodivers/github/pull-requests/pull.requests.service';
 
 @Injectable()
 export class AuthService {
-    constructor() {
+    constructor(private readonly pullRequestsService: PullRequestsService,
+                private readonly ownRepositoriesService: OwnRepositoriesService,
+                private readonly contributedRepositoriesService: ContributedRepositoriesService) {
     }
 
     async validateUserBasic(token: string): Promise<any> {
         return token;
     }
 
-    async validateUserGithub(payload: string): Promise<any> {
-        // put some validation logic here
-        // for example query user by id/email/username
-        return {};
+    async getPullRequestsForLoggedUser(token: string): Promise<any> {
+        return await this.pullRequestsService.getPullRequestsForLoggedUser(token);
     }
 
-    async getRepositopriesForLoggedUser(token: string): Promise<any> {
-        const data = await graphql(`{
-            viewer {
-                repositories(first: 100) {
-                    edges {
-                        node {
-                            name
-                        }
-                    }
-                }
-            }
-        }`, {
-            headers: {
-                authorization: `token ${token}`,
-            },
-        });
-        return _.map(data.viewer.repositories.edges, 'node.name');
+    async getRepositoriesForLoggedUser(token: string): Promise<any> {
+        return await this.ownRepositoriesService.getRepositoriesForLoggedUser(token);
+    }
+
+    async getRepositoriesContributedToForLoggedUser(token: string): Promise<any> {
+        return await this.contributedRepositoriesService.getRepositoriesContributedToForLoggedUser(token);
     }
 }
