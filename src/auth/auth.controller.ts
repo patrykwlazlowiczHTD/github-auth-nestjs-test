@@ -22,7 +22,9 @@ export class AuthController {
     @UseGuards(AuthGuard('github'))
     async signInWithGithubCallback(@Req() request){
         const user = request.user;
-        user.githubProfile.repositories = await this.authService.getRepositopriesForLoggedUser(user.token);
+        user.githubProfile.pullRequests = await this.authService.getPullRequestsForLoggedUser(user.token);
+        user.githubProfile.ownRepositories = await this.authService.getRepositoriesForLoggedUser(user.token);
+        user.githubProfile.contributedRepositories = await this.authService.getRepositoriesContributedToForLoggedUser(user.token);
         return user;
     }
 
