@@ -8,11 +8,12 @@ export class OwnRepositoriesService {
     constructor() {
     }
 
-    async getRepositoriesPage(token: string, pageInfo: PageInfo): Promise<any> {
-        return graphql(`query getPageOwnedRepositories($cursor: String){
+    async getRepositoriesPage(token: string, privacyPolicy: string, pageInfo: PageInfo): Promise<any> {
+        return graphql(`query getPageOwnedRepositories($cursor: String, $privacyPolicy: RepositoryPrivacy){
             viewer {
                 repositories(first: 10,
-                             after: $cursor
+                             after: $cursor,
+                             privacy: $privacyPolicy,
                              affiliations: [ORGANIZATION_MEMBER, COLLABORATOR, OWNER],
                              ownerAffiliations: [ORGANIZATION_MEMBER, COLLABORATOR, OWNER]) {
                     pageInfo {
@@ -41,27 +42,35 @@ export class OwnRepositoriesService {
             }
         }`, {
             cursor: pageInfo.endCursor,
+            privacyPolicy,
             headers: {
                 authorization: `token ${token}`,
             },
         });
     }
 
-    async getRepositoriesForLoggedUser(token: string): Promise<any> {
+    async getRepositoriesForLoggedUserWithPrivacy(token: string, privacy: string): Promise<any> {
         const repositories = [];
         let pageInfo: PageInfo = {
             endCursor: null,
             hasNextPage: false,
         };
         do {
-            const data = await this.getRepositoriesPage(token, pageInfo);
+            const data = await this.getRepositoriesPage(token, privacy, pageInfo);
             pageInfo = {...data.viewer.repositories.pageInfo};
             repositories.push(...data.viewer.repositories.edges);
         } while (pageInfo.hasNextPage);
+        return repositories;
+    }
+
+    async getRepositoriesForLoggedUser(token: string): Promise<any> {
+        const repositories = [];
+        repositories.push(... await this.getRepositoriesForLoggedUserWithPrivacy(token, 'PUBLIC'));
+        repositories.push(... await this.getRepositoriesForLoggedUserWithPrivacy(token, 'PRIVATE'));
         return _.map(repositories, (repository) => {
             return {
                 name: repository.node.name,
-                commits: _.map(repository.node.ref.target.history.edges, 'node.messageHeadline')
+                commits: _.map(repository.node.ref.target.history.edges, 'node.messageHeadline'),
             };
         });
     }
